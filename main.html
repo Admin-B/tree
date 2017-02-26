@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Wiki Page</title>
+    <meta charset="utf-8">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+            crossorigin="anonymous">
+            <style type='text/css'>
+                .container {
+                    width: 800px;
+                    padding:10px;
+                }
+                
+                .nav {
+                    padding: 0;
+                }
+                
+                .nav .btn,
+                .nav input {
+                    border-radius: 0;
+                }
+                
+                .nav input {
+                    margin: 10px 0;
+                    padding: 10px 5px;
+                    height: 35px;
+                    font-size: 1.15em;
+                }
+                
+                .content {
+                    padding: 0;
+                    min-height: 500px;
+                    background: #eee;
+                }
+            </style>
+</head>
+
+<body>
+    <section class='container'>
+        <article class='nav col-md-12'>
+            <div class='btn col-md-6 btn-info' id='play'>Play</div>
+            <div class='btn col-md-6 btn-warning' id='stop'>Stop</div>
+        </article>
+        <section class='content col-md-12'>
+            <canvas id='canvas' width=800 height=500></canvas>
+        </section>
+    </section>
+    <script src='./Method.js'></script>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var width = canvas.width, height = canvas.height;
+        var ctx = canvas.getContext('2d');
+
+        var index = 5;
+        function Tree(s, dir, c) {
+            this.s = s;
+            this.e = Vector2(s);
+            this.c = c || 0;
+            this.dir = dir.normalize();
+            this.tree = [];
+        }
+        Tree.prototype.grow = function () {
+            this.e.sum(this.dir.mul(1));
+            this.dir.normalize();
+
+            if(random(20) === 1 && this.c < 5){
+                trees.push(new Tree(Vector2(this.e), Vector2(randomF(-1, 1),randomF(0, -2)), this.c + 1))
+            }
+        }
+        Tree.prototype.draw = function () {
+            ctx.beginPath();
+            ctx.moveTo(this.s.x, this.s.y);
+            ctx.lineTo(this.e.x, this.e.y);
+            ctx.stroke();
+        }
+        var trees = [new Tree(Vector2(width/2, height), Vector2(0, -1))];
+        var timer = setInterval(function () {
+            ctx.clearRect(0, 0, width, height);
+            for(var i=0; i<trees.length; i++){
+                trees[i].grow();
+                trees[i].draw();
+            }
+        }, 100);
+
+        document.getElementById('play').addEventListener('click',function(){
+            if(!timer){
+               timer = setInterval(function () {
+               ctx.clearRect(0, 0, width, height);
+                    for(var i=0; i<trees.length; i++){
+                        trees[i].grow();
+                        trees[i].draw();
+                    }
+               }, 100);         
+            }
+        });
+        document.getElementById('stop').addEventListener('click',function(){
+            if(timer){
+                clearInterval(timer);
+                timer = undefined;
+            }
+        });
+    </script>
+</body>
+
+</html>
